@@ -82,7 +82,43 @@ table tr:nth-child(even) {
 	<div>
 		<div align="center">
 			<table border="1">
+				<thead>
+					<!-- 撤销公文 -->
 				<tr>
+					<td align="center" colspan="3">撤销公文</td>
+				</tr>
+				 <tr>
+					<td>撤销公文ID：</td>
+					<td>
+						<input type="text" name="revoked" id="revoked" style="width: 250px;">
+					</td>
+					<td style="width: 200px;" align="left" rowspan="4">
+						<span>
+							<button onclick="revoked();" class="bu">撤销</button>
+						</span>
+						<span style="padding-left: 30px;">
+							<label id="revokedMsg" style="color: red;"></label>
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td>公文标题：</td>
+					<td><input type="text" name="revokedTitle" id="revokedTitle" style="width: 250px;"></td>
+				</tr>
+				<tr>
+					<td>交换号：</td>
+					<td><input type="text" name="revokedExchNo" id="revokedExchNo" style="width: 250px;"></td>
+				</tr>
+				<tr>
+					<td>撤销原因：</td>
+					<td>
+						<input type="text" name="revokedComment" id="revokedComment" style="width: 250px;">
+					</td>
+				</tr> 
+				</thead>
+				
+			
+				<!-- <tr>
 					<td align="center" colspan="3">签收公文</td>
 				</tr>
 				<tr>
@@ -112,35 +148,10 @@ table tr:nth-child(even) {
 					<td>
 						<input type="text" name="acceptedComment" id="acceptedComment" style="width: 250px;">
 					</td>
-				</tr>
-				<!-- 撤销公文 -->
-				<tr>
-					<td align="center" colspan="3">撤销公文</td>
-				</tr>
-				 <tr>
-					<td>撤销公文ID：</td>
-					<td>
-						<div><input type="text" name="revoked" id="revoked" style="width: 250px;"></div>
-						<div><input type="text" name="revokedrelaid" id="revokedrelaid" style="width: 250px;"></div>
-						
-					</td>
-					<td style="width: 200px;" align="left" rowspan="2">
-						<span>
-							<button onclick="revoked();" class="bu">撤销</button>
-						</span>
-						<span style="padding-left: 30px;">
-							<label id="revokedMsg" style="color: red;"></label>
-						</span>
-					</td>
-				</tr>
-				<tr>
-					<td>撤销原因：</td>
-					<td>
-						<input type="text" name="revokedComment" id="revokedComment" style="width: 250px;">
-					</td>
-				</tr> 
+				</tr> -->
+				
 				<!-- 回退公文 -->
-				<tr>
+				<!-- <tr>
 					<td align="center" colspan="3">回退公文</td>
 				</tr>
 				 <tr>
@@ -164,7 +175,7 @@ table tr:nth-child(even) {
 							<label id="stepBackMsg" style="color: red;"></label>
 						</span>
 					</td>
-				</tr>
+				</tr> -->
 				<!-- <tr>
 					<td>回退原因：</td>
 					<td>
@@ -224,6 +235,7 @@ table tr:nth-child(even) {
 		});
 	}
 	
+	//撤销公文
 	function revoked() {
 		$('#revokedMsg').html('');
 		$.ajax({
@@ -232,7 +244,8 @@ table tr:nth-child(even) {
 			data : {
 				"type" : 'revoked',
 				"revokedId" : $('#revoked').val(),
-				"revokedrelaid" : $('#revokedrelaid').val(),
+				"revokedExchNo" : $('#revokedExchNo').val(),
+				"title" : $('#revokedTitle').val(),
 				"comment":$('#revokedComment').val()
 			},
 			success : function(msg) {

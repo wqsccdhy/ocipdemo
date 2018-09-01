@@ -132,20 +132,18 @@ public class OCIPServicesServlet extends HttpServlet {
 			}
 
 		}else if ("revoked".equals(param)) {//撤销公文
-			String revokedId = request.getParameter("revokedId");
-			String revokedrelaid = request.getParameter("revokedrelaid");
-			String comment = request.getParameter("comment");
+			String revokedId = request.getParameter("revokedId");//撤销公文的公文ID
+			String exchNo = request.getParameter("revokedExchNo");//交换号
+			String comment = request.getParameter("comment");//撤销原因
+			String title = request.getParameter("title");//公文标题
 			Map<String, Object> paramMap = new HashMap<String, Object>();
 			paramMap.put("detailId", Long.parseLong(revokedId));
+			paramMap.put("subject", title);
 			paramMap.put("comment", comment);
-			String userName = "异构测试人员1";
-			paramMap.put("name", userName);//公文撤销人员名称
-			paramMap.put("originMessageId", revokedrelaid);//公文撤销人员名称
-			/**
-			 * 接入系统人员id：138913789043295577
-			 * 接入系统人员对应的OCIP人员id：-8467766985147790299
-			 */
-			paramMap.put("id", "138913789043295577");//公文撤销人员ID
+			paramMap.put("exchNo", exchNo);//交换号
+			paramMap.put("name", sendMemName);//公文撤销人员名称
+			//paramMap.put("id", "138913789043295577");//公文撤销人员ID
+			paramMap.put("id", sendMemLocalId);//公文撤销人员本地ID
 			paramMap.put("edocOperation", EdocOperation.REVOKED);
 			try {
 				getBussinessService().fireExchange(BIZContentType.RET, paramMap);

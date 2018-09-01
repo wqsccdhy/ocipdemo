@@ -93,12 +93,11 @@ public class EdocRETExchangeHandler implements IBussinessHandler{
 	public BIZExchangeData exchangeSend(Map<String, Object> params) throws BussinessException {
 		BIZExchangeData bizData = new BIZExchangeData();
 		bizData.setIdentifier(UUID.randomUUID().toString().replaceAll("-", ""));
-		String subject = "公文标题";
-		Object object = params.get("detailId");
 		String exchangeStatus = params.get("exchangeStatus")!=null?(String)params.get("exchangeStatus"):"";
-		String sumaryId = String.valueOf(object);
+		String subject = (String) params.get("subject");
 		bizData.setSubject(subject);
-		bizData.setGroupId(sumaryId);
+		Object object = params.get("detailId");
+		String sumaryId = String.valueOf(object);
 		
 		EdocOperation edocOperation = (EdocOperation) params.get("edocOperation");
 		List<Organization> receivers = new ArrayList<Organization>();
@@ -172,7 +171,8 @@ public class EdocRETExchangeHandler implements IBussinessHandler{
 			if(comment != null && !comment.isEmpty()){
 				retEdocObject.setOpinion(comment);
 			}
-			Object originMessageIdObj = params.get("originMessageId");
+			bizData.setGroupId(sumaryId);
+			Object originMessageIdObj = params.get("exchNo");
 			retEdocObject.setOriginMessageId(String.valueOf(originMessageIdObj));
 		}
 		
