@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
+    xmlns:tx="http://www.springframework.org/schema/tx" xmlns:p="http://www.springframework.org/schema/p"
+    xmlns:util="http://www.springframework.org/schema/util" xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+    xmlns:cache="http://www.springframework.org/schema/cache"
+    xmlns:jaxws="http://cxf.apache.org/jaxws"
+    xmlns:soap="http://cxf.apache.org/bindings/soap"
+    xsi:schemaLocation="
+    http://www.springframework.org/schema/context
+    http://www.springframework.org/schema/context/spring-context.xsd
+    http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans.xsd
+    http://www.springframework.org/schema/tx
+    http://www.springframework.org/schema/tx/spring-tx.xsd
+    http://www.springframework.org/schema/jdbc
+    http://www.springframework.org/schema/jdbc/spring-jdbc.xsd
+    http://www.springframework.org/schema/cache
+    http://www.springframework.org/schema/cache/spring-cache.xsd
+    http://www.springframework.org/schema/aop
+    http://www.springframework.org/schema/aop/spring-aop.xsd
+    http://www.springframework.org/schema/util
+    http://www.springframework.org/schema/util/spring-util.xsd
+    http://cxf.apache.org/bindings/soap 
+    http://cxf.apache.org/schemas/configuration/soap.xsd 
+    http://cxf.apache.org/jaxws 
+    http://cxf.apache.org/schemas/jaxws.xsd">
+    
+   	<bean id="applicationContext" class="org.apache.axis2.extensions.spring.receivers.ApplicationContextHolder" />
+   	
+	<bean id="ocipExchangeHandler" class="com.seeyon.ocip.exchange.handler.OcipExchangeHandler" init-method="initService" />
+
+	<bean id="edocExchangeService" class="com.seeyon.oa.exchange.EdocExchangeService"/>
+	
+	<bean id="ocip" class="com.seeyon.apps.ocip.webservice.impl.OcipWebServiceImpl"/>  
+	
+	<bean id="multiThreadedHttpConnectionManager"
+		class="org.apache.commons.httpclient.MultiThreadedHttpConnectionManager">
+		<property name="params">
+			<bean
+				class="org.apache.commons.httpclient.params.HttpConnectionManagerParams">
+				<property name="maxTotalConnections" value="200" />
+				<property name="defaultMaxConnectionsPerHost" value="20" />
+			</bean>
+		</property>
+	</bean>
+	
+	<bean id="httpInvokerRequestExecutor"
+		class="org.springframework.remoting.httpinvoker.CommonsHttpInvokerRequestExecutor">
+		<property name="httpClient">
+			<bean class="org.apache.commons.httpclient.HttpClient">
+				<property name="connectionTimeout" value="2000" />
+				<property name="timeout" value="10000" />
+				<property name="httpConnectionManager">
+					<ref bean="multiThreadedHttpConnectionManager" />
+				</property>
+			</bean>
+		</property>
+	</bean>
+	
+	<!-- ocip在线检测 -->
+	<bean id="ocipOnlineChecker"
+		class="org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean">
+		<!-- 代理地址 -->
+		<property name="serviceUrl"
+			value="http://59.215.200.48:8085/ServerAgent/onlineChecker.service" />
+		<property name="serviceInterface" value="com.seeyon.ocip.common.online.IOnlineChecker" />
+		<property name="httpInvokerRequestExecutor" ref="httpInvokerRequestExecutor" />
+	</bean>
+	
+	<bean id="organizationManager"
+		class="org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean">
+		<!-- 代理地址 -->
+		<property name="serviceUrl"
+			value="http://59.215.200.48:8085/ServerAgent/organizationManager.service" />
+		<property name="serviceInterface"
+			value="com.seeyon.ocip.common.organization.IOrganizationManager" />
+		<property name="httpInvokerRequestExecutor" ref="httpInvokerRequestExecutor" />
+	</bean>
+	
+	<bean id="edocOFCExchangeHandler" class="ocipexchangedemo.EdocOFCExchangeHandler">
+		<property name="organizationManager" ref="organizationManager"></property>
+	</bean>
+	
+	<bean id="edocRETExchangeHandler" class="ocipexchangedemo.EdocRETExchangeHandler">
+		<property name="organizationManager" ref="organizationManager"></property>
+	</bean>
+
+	<!-- <import resource="classpath*:META-INF/cxf/cxf.xml" />  
+    <import resource="classpath*:META-INF/cxf/cxf-extension-soap.xml" />  
+    <import resource="classpath*:META-INF/cxf/cxf-servlet.xml" /> -->
+    
+    <!-- <jaxws:endpoint id="ocipWebService" implementor="#ocip" address="/ocipWebService" />  -->
+    
+    
+    <!-- <jaxws:endpoint id="userValidate" address="/userValidateByParam" implementor="com.webservice.cfx.UserValidateImpl" /> -->
+    
+</beans>
