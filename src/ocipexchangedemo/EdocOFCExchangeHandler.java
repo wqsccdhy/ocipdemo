@@ -198,8 +198,7 @@ public class EdocOFCExchangeHandler implements IBussinessHandler {
 		recAdd.setType("account");//接受者类型设置为account
 		//接收单位的ID
 		//将接收单位的本地ID转换为OCIP对应的单位ID
-		String hzSystenCode = "8185024610305461530";//TODO， 注意:惠智注册到OCIP的id，真实值由致远提供,8185024610305461530为测试环境惠智注册到OCIP的id
-		OcipOrgUnit account = organizationManager.getAccount(recOrgID , hzSystenCode);//OCIP单位实体
+		OcipOrgUnit account = organizationManager.getAccount(recOrgID , OCIPServicesServlet.hzSystenCode);//OCIP单位实体
 		String accountId = account.getId();
 		recOrgName = account.getName();
 		recAdd.setId(accountId);

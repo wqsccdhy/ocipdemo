@@ -5,12 +5,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.serializer.SerializerFeature;
+import com.seeyon.oa.exchange.OCIPServicesServlet;
 import com.seeyon.ocip.common.IConstant;
 import com.seeyon.ocip.common.IConstant.AddressType;
 import com.seeyon.ocip.common.entry.Address;
 import com.seeyon.ocip.common.license.OcipKeyMananger;
+import com.seeyon.ocip.common.org.OcipOrgUnit;
 import com.seeyon.ocip.common.organization.IOrganizationManager;
 import com.seeyon.ocip.exchange.api.IBussinessHandler;
 import com.seeyon.ocip.exchange.exceptions.BussinessException;
@@ -129,10 +129,8 @@ public class EdocRETExchangeHandler implements IBussinessHandler{
 		
 		//异构系统接收到公文后，需要给OCIP发送一个回执信息，告知OCIP异构系统收到的数据
 		if (edocOperation == EdocOperation.RECEIVED) {
-			String name = (String) params.get("name");//回执发起者名称
-			String id = (String) params.get("id");//回执发起者ID
-			name = "异构单位1";//回执发起者单位名称
-			id = "2556842553182670622";//回执发起者单位ID 
+			String name  = OCIPServicesServlet.sendOrgName;//回执发起者单位名称
+			String id = OCIPServicesServlet.sendOrgLocalId;//回执发起者本地单位ID 
 			createUser.setName(name);//撤销公文发起者名称
 			createUser.setType(AddressType.account.name());
 			createUser.setId(id);//撤销公文发起者ID
@@ -147,17 +145,21 @@ public class EdocRETExchangeHandler implements IBussinessHandler{
 		//签收公文
 		if (edocOperation == EdocOperation.ACCEPTED) {
 			retEdocObject.setRecNo("");
-			String name = "异构测试人员1";//回执发起者单位名称
-			String id = "138913789043295577";//回执发起人员ID 
-			createUser.setName(name);//撤销公文发起者名称
+			String name = (String) params.get("name");//公文签收发起人员名称
+			String id = (String) params.get("id");//公文签收发起人员ID
+			createUser.setName(name);
 			createUser.setType(AddressType.member.name());
-			createUser.setId(id);//撤销公文发起者ID
+			createUser.setId(id);
 			Object groupId = params.get("groupId");
 			Object detailId = params.get("detailId");
 			Object exchNo = params.get("exchNo");
 			bizData.setGroupId(String.valueOf(groupId));
 			retEdocObject.setOriginMessageId(String.valueOf(exchNo));
 			retEdocObject.setDetailId(String.valueOf(detailId));
+			String comment = (String)params.get("comment");//签收回复
+			if(comment != null && !comment.isEmpty()){
+				retEdocObject.setOpinion(comment);
+			}
 		}
 		
 		//撤销公文
@@ -179,30 +181,33 @@ public class EdocRETExchangeHandler implements IBussinessHandler{
 		// 回退公文
 		if (edocOperation == EdocOperation.STEPBACK) {
 			retEdocObject.setRecNo("");
-			String name = "异构测试人员1";//回执发起者单位名称
-			String id = "138913789043295577";//回执发起人员ID 
-			createUser.setName(name);//撤销公文发起者名称
+			String name = (String) params.get("name");
+			String id = (String) params.get("id");
+			createUser.setName(name);//公文回退人员名称
 			createUser.setType(AddressType.member.name());
-			createUser.setId(id);//撤销公文发起者ID
+			createUser.setId(id);//公文回退人员名称本地ID
 			Object groupId = params.get("groupId");
 			Object detailId = params.get("detailId");
 			Object exchNo = params.get("exchNo");
 			bizData.setGroupId(String.valueOf(groupId));
 			retEdocObject.setOriginMessageId(String.valueOf(exchNo));
 			retEdocObject.setDetailId(String.valueOf(detailId));
+			String comment = (String)params.get("comment");//回退原因
+			if(comment != null && !comment.isEmpty()){
+				retEdocObject.setOpinion(comment);
+			}
 		}
 		
 		//接收者信息
 		Organization reciverOrg = new Organization();
 		Address recAdd = new Address();
 		recAdd.setResource("0");
-		/**
-		 * 接收单位对应的OCIO平台ID：3027673676430002247
-		 * 接收单位ID：3153276437931052486
-		 */
-		String accountId = "3027673676430002247";
-		recAdd.setId(accountId);//接单位对应的OCIP单位ID
-		String recOrgName = "清镇市公安局";//接收单位名称
+		String accountId = OCIPServicesServlet.recOrgLocalId;//接单位本地单位ID
+		//将接收单位的本地ID转换为OCIP对应的单位ID
+		OcipOrgUnit account = organizationManager.getAccount(accountId , OCIPServicesServlet.hzSystenCode);//OCIP单位实体
+		recAdd.setId(account.getId());//接单位对应的OCIP单位ID
+		String recOrgName = OCIPServicesServlet.recOrgName;//接收单位名称
+		
 		recAdd.setName(recOrgName);
 		recAdd.setType("account");
 		reciverOrg.setIdentification(recAdd);
@@ -223,10 +228,6 @@ public class EdocRETExchangeHandler implements IBussinessHandler{
 		bizData.setSource(source);
 		bizData.setBussnissMessage(bizMessage);
 		bizData.setRecivers(receivers);
-		if (edocOperation == EdocOperation.ACCEPTED) {
-			String jsonString = JSONObject.toJSONString(bizData, SerializerFeature.WriteMapNullValue);
-			System.out.println("jsonString:" + jsonString);
-		}
 		
 		return bizData;
 	}

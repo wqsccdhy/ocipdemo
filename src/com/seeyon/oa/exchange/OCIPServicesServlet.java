@@ -78,6 +78,9 @@ public class OCIPServicesServlet extends HttpServlet {
 	 */
 	public static String recOrgOCIPId = "3027673676430002247";
 	
+	//TODO， 注意:惠智注册到OCIP的id，真实值由致远提供,8185024610305461530为测试环境惠智注册到OCIP的id
+	public static String hzSystenCode = "8185024610305461530";
+	
 	/**
 	 * 公文接收人员名称
 	 */
@@ -159,11 +162,16 @@ public class OCIPServicesServlet extends HttpServlet {
 			String mainId = request.getParameter("acceptedId");
 			String detailId = request.getParameter("detailId");
 			String exchNo = request.getParameter("exchNo");
+			String title = request.getParameter("title");
+			String comment = request.getParameter("comment");
 			Map<String, Object> paramMap = new HashMap<String, Object>();
 			paramMap.put("groupId", mainId);
+			paramMap.put("subject", title);
 			paramMap.put("detailId", detailId);
 			paramMap.put("exchNo", exchNo);
-			paramMap.put("comment", "签收回复");
+			paramMap.put("comment", comment);
+			paramMap.put("name", sendMemName);//公文签收人员名称
+			paramMap.put("id", sendMemLocalId);//公文签收人员本地ID
 			paramMap.put("edocOperation",  EdocOperation.ACCEPTED);
 			try {
 				getBussinessService().fireExchange(BIZContentType.RET, paramMap);
@@ -176,14 +184,19 @@ public class OCIPServicesServlet extends HttpServlet {
 			}
 			
 		}else if ("stepBack".equals(param)) {//回退公文
-			String groupId = request.getParameter("stepBackId");
-			String detailId = request.getParameter("stepBackDetailId");
-			String exchNo = request.getParameter("stepBackExchNo");
+			String mainId = request.getParameter("stepBackId");
+			String title = request.getParameter("title");
+			String detailId = request.getParameter("detailId");
+			String exchNo = request.getParameter("exchNo");
+			String comment = request.getParameter("comment");
 			Map<String, Object> paramMap = new HashMap<String, Object>();
-			paramMap.put("groupId", groupId);
+			paramMap.put("groupId", mainId);
 			paramMap.put("detailId", detailId);
 			paramMap.put("exchNo", exchNo);
-			paramMap.put("comment", "回退原因");
+			paramMap.put("comment", comment);
+			paramMap.put("subject", title);
+			paramMap.put("name", sendMemName);//公文签收人员名称
+			paramMap.put("id", sendMemLocalId);//公文签收人员本地ID
 			paramMap.put("edocOperation",  EdocOperation.STEPBACK);
 			
 			try {

@@ -117,24 +117,17 @@ table tr:nth-child(even) {
 				</tr> 
 				</thead>
 				
-			
-				<!-- <tr>
+				<!-- 签收公文 -->
+				<thead>
+					<tr>
 					<td align="center" colspan="3">签收公文</td>
 				</tr>
 				<tr>
 					<td>签收公文ID：</td>
 					<td>
-						<div>
-							公文ID：<input type="text" name="accepted" id="accepted" style="width: 250px;">
-						</div>
-						<div>
-							detailId：<input type="text" name="detailId" id="detailId" style="width: 250px;">
-						</div>
-						<div>
-							EXCHNO：<input type="text" name="exchNo" id="exchNo" style="width: 250px;">
-						</div>
+						<input type="text" name="acceptedId" id="acceptedId" style="width: 250px;">
 					</td>
-					<td style="width: 200px;" align="left" rowspan="2">
+					<td style="width: 200px;" align="left" rowspan="5">
 						<span>
 							<button onclick="accepted();" class="bu">签收</button>
 						</span>
@@ -144,30 +137,36 @@ table tr:nth-child(even) {
 					</td>
 				</tr>
 				<tr>
-					<td>签收后回复：</td>
+					<td>公文标题:</td>
+					<td><input type="text" name="acceptedTitle" id="acceptedTitle" style="width: 250px;"></td>
+				</tr>
+				<tr>
+					<td>交换号:</td>
+					<td><input type="text" name="acceptedExchNo" id="acceptedExchNo" style="width: 250px;"></td>
+				</tr>
+				<tr>
+					<td>detailId:</td>
+					<td><input type="text" name="acceptedDetailId" id="acceptedDetailId" style="width: 250px;"></td>
+				</tr>
+				<tr>
+					<td>签收回复：</td>
 					<td>
 						<input type="text" name="acceptedComment" id="acceptedComment" style="width: 250px;">
 					</td>
-				</tr> -->
+				</tr>
+				</thead>
 				
 				<!-- 回退公文 -->
-				<!-- <tr>
+				<thead>
+					<tr>
 					<td align="center" colspan="3">回退公文</td>
 				</tr>
 				 <tr>
 					<td>回退公文ID：</td>
 					<td>
-						<div>
-							公文ID：<input type="text" name="stepBackId" id="stepBackId" style="width: 250px;">
-						</div>
-						<div>
-							detailId：<input type="text" name="stepBackDetailId" id="stepBackDetailId" style="width: 250px;">
-						</div>
-						<div>
-							EXCHNO:<input type="text" name="stepBackExchNo" id="stepBackExchNo" style="width: 250px;">
-						</div>
+						<input type="text" name="stepBackId" id="stepBackId" style="width: 250px;">
 					</td>
-					<td style="width: 200px;" align="left" rowspan="3">
+					<td style="width: 200px;" align="left" rowspan="5">
 						<span>
 							<button onclick="stepBack();" class="bu">回退</button>
 						</span>
@@ -175,14 +174,27 @@ table tr:nth-child(even) {
 							<label id="stepBackMsg" style="color: red;"></label>
 						</span>
 					</td>
-				</tr> -->
-				<!-- <tr>
+				</tr>
+				<tr>
+					<td>公文标题：</td>
+					<td><input type="text" name="stepBackTitle" id="stepBackTitle" style="width: 250px;"></td>
+				</tr>
+				<tr>
+					<td>detailId：</td>
+					<td><input type="text" name="stepBackDetailId" id="stepBackDetailId" style="width: 250px;"></td>
+				</tr>
+				<tr>
+					<td>交换号：</td>
+					<td><input type="text" name="stepBackExchNo" id="stepBackExchNo" style="width: 250px;"></td>
+				</tr>
+				<tr>
 					<td>回退原因：</td>
 					<td>
 						<input type="text" name="stepBackComment" id="stepBackComment" style="width: 250px;">
 					</td>
-					
-				</tr> -->
+				</tr>
+				</thead>
+				
 			</table>
 		</div>
 	</div>
@@ -261,7 +273,7 @@ table tr:nth-child(even) {
 			}
 		});
 	}
-	
+	//签收公文
 	function accepted() {
 		$('#acceptedMsg').html('');
 		$.ajax({
@@ -269,9 +281,11 @@ table tr:nth-child(even) {
 			url : "${pageContext.request.contextPath}/uploadUnit",
 			data : {
 				"type" : 'accepted',
-				"acceptedId" : $('#accepted').val(),
-				"detailId" : $('#detailId').val(),
-				"exchNo" : $('#exchNo').val()
+				"acceptedId" : $('#acceptedId').val(),
+				"title" : $('#acceptedTitle').val(),
+				"exchNo" : $('#acceptedExchNo').val(),
+				"detailId" : $('#acceptedDetailId').val(),
+				"comment" : $('#acceptedComment').val()
 			},
 			success : function(msg) {
 				var obj = JSON.parse(msg);
@@ -295,8 +309,10 @@ table tr:nth-child(even) {
 			data : {
 				"type" : 'stepBack',
 				"stepBackId" : $('#stepBackId').val(),
-				"stepBackDetailId" : $('#stepBackDetailId').val(),
-				"stepBackExchNo" : $('#stepBackExchNo').val()
+				"title" : $('#stepBackTitle').val(),
+				"detailId" : $('#stepBackDetailId').val(),
+				"exchNo" : $('#stepBackExchNo').val(),
+				"comment" : $('#stepBackComment').val()
 			},
 			success : function(msg) {
 				var obj = JSON.parse(msg);
